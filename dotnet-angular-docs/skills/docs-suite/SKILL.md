@@ -30,6 +30,7 @@ what makes the output reliable on large solutions.
    - repository → `project-readme`
    - custom spec in `docs/.docgen/custom/*.md` → `custom-docs` (one item
      per spec)
+   - deployment/operations reference → `ops-docs` (when requested)
    The architecture overview (`architecture-docs`) is ONE item at workspace
    level — it needs the whole picture, so keep it for yourself or one agent
    given the full inventory.

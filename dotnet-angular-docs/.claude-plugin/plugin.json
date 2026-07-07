@@ -1,6 +1,6 @@
 {
   "name": "dotnet-angular-docs",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "Documentation generator for .NET and Angular projects. Generates API docs, architecture docs (ADR, C4, Mermaid), README/onboarding guides, user manuals, and changelogs — all grounded in actual source code analysis.",
   "author": {
     "name": "Your Team"
