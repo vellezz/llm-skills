@@ -1,6 +1,6 @@
 # dotnet-angular-docs
 
-Documentation generator for .NET + Angular projects. It ships **seven narrow
+Documentation generator for .NET + Angular projects. It ships **ten narrow
 skills**, **slash commands**, and a **docs-writer agent** for producing API
 docs, architecture docs (ADR / C4 / Mermaid), README & onboarding guides, user
 manuals, changelogs, EF Core data-model docs — and for auditing existing docs
@@ -25,7 +25,7 @@ a repository so GitHub Copilot (VS Code + coding agent) picks them up.
 | `skills/docs-suite` | **Multi-agent orchestrator**: full documentation set via parallel docs-writer subagents (one per service/area) + index synthesis | "document everything", "pełna dokumentacja", `/docs-all` |
 | `skills/docs-site` | GitHub Pages publishing (MkDocs Material + Mermaid): `local` build-and-push, or a manually-triggered per-release-tag workflow | "github pages", "opublikuj dokumentację", `/docs-pages` |
 | `skills/custom-docs` | Project-specific documents from free-text specs in `docs/.docgen/custom/` (env references, bespoke diagrams, runbooks) | "custom docs", "dedykowany dokument", `/docs-custom` |
-| `commands/docs-*` | Slash commands (Claude Code only) — deterministic invocation of each skill | `/docs-api`, `/docs-drift`, `/docs-schema`, … |
+| `commands/docs-*` | Slash commands (Claude Code only) — deterministic invocation of each skill | `/docs-api`, `/docs-all`, `/docs-pages`, … |
 | `agents/docs-writer.md` | Claude Code subagent enforcing grounding, idempotent updates, Markdown+Mermaid output | invoked via the Agent tool |
 | `copilot/agents/docs-writer.agent.md` | Same agent, adapted for GitHub Copilot (Copilot tool names) | selected manually in chat |
 
@@ -36,18 +36,20 @@ dotnet-angular-docs/
 ├── .claude-plugin/plugin.json         # Claude Code manifest
 ├── agents/docs-writer.md              # agent — Claude Code tool names
 ├── commands/                          # slash commands — Claude Code only
-│   ├── docs-api.md … docs-changelog.md
-│   ├── docs-drift.md
-│   └── docs-schema.md
+│   ├── docs-api.md docs-arch.md docs-readme.md docs-manual.md
+│   ├── docs-changelog.md docs-schema.md docs-custom.md
+│   ├── docs-all.md                    # multi-agent suite
+│   └── docs-pages.md                  # GitHub Pages publishing
 ├── skills/                            # shared skills (used by both platforms)
-│   ├── api-docs/ …
-│   ├── architecture-docs/ …
-│   ├── project-readme/ …
-│   ├── user-manual/ …
-│   ├── changelog/ …
-│   ├── docs-drift/ …
-│   └── db-schema-docs/ …
+│   ├── api-docs/ architecture-docs/ project-readme/
+│   ├── user-manual/ changelog/ db-schema-docs/
+│   ├── docs-drift/                    # drift audit (no wrapper command — name-collision rule)
+│   ├── docs-suite/                    # multi-agent orchestrator
+│   ├── docs-site/                     # GitHub Pages publishing
+│   └── custom-docs/                   # free-text custom document specs
 ├── copilot/agents/docs-writer.agent.md   # agent — Copilot tool names
+├── tests/                             # behavioral test harness (not loaded by the plugin)
+├── scripts/validate.py                # static validation (CI)
 └── README.md
 ```
 
@@ -61,7 +63,7 @@ between platforms (tool names and file extension), so it is kept in two places.
 The manifest lives in `.claude-plugin/plugin.json`, so Claude Code discovers the
 plugin from the `dotnet-angular-docs/` directory. Add it via your plugin
 marketplace, or point Claude Code at this directory. Verify with `/plugin` —
-the seven skills, the `docs-*` commands, and the `docs-writer` agent should
+the ten skills, the `docs-*` commands, and the `docs-writer` agent should
 appear.
 
 Slash commands map 1:1 to skills for deterministic invocation:
@@ -75,6 +77,9 @@ Slash commands map 1:1 to skills for deterministic invocation:
 | `/docs-changelog [range]` | changelog |
 | `/dotnet-angular-docs:docs-drift [area]` | docs-drift (skill invoked directly — see note) |
 | `/docs-schema [context]` | db-schema-docs |
+| `/docs-custom [spec]` | custom-docs |
+| `/docs-all [scope]` | docs-suite (multi-agent) |
+| `/docs-pages [mode]` | docs-site |
 
 > **Naming note:** a command must never share its name with a skill — both
 > register as `/plugin:name` and the command shadows the skill, so the skill's
@@ -100,7 +105,7 @@ Copilot Chat with `/skills`.
 
 ## Design notes (why it's structured this way)
 
-- **Seven narrow skills instead of one big one** — only skill frontmatter is
+- **Ten narrow skills instead of one big one** — only skill frontmatter is
   loaded up front; the full body loads when your prompt matches. One monolithic
   "docs" skill would burn context on API-extraction rules when you just wanted a
   changelog.
