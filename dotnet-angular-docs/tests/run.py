@@ -45,7 +45,7 @@ ALLOWED_TOOLS = (
     "Bash(head:*),Bash(tail:*),Bash(find:*),Bash(rg:*)"
 )
 
-SENTINEL = "MANUAL-SENTINEL-7F3A — ręczna notatka zespołu, nie usuwać."
+SENTINEL = "MANUAL-SENTINEL-7F3A — hand-written team note, do not remove."
 
 PHANTOM_SECTION = """
 
@@ -431,7 +431,7 @@ def main() -> int:
         print(f"\n=== {name} ({cfg.mode}) ===")
         try:
             findings = fn(cfg, llm=not args.setup_only)
-        except Exception as exc:  # noqa: BLE001 — raportujemy i jedziemy dalej
+        except Exception as exc:  # noqa: BLE001 — report and continue
             findings = [f"harness error: {exc}"]
         results[name] = asserts.split_failures(findings)
 
