@@ -1,0 +1,14 @@
+{
+  "ORDERS": {
+    "TITLE": "Zamówienia",
+    "NEW": "Nowe zamówienie",
+    "SAVE": "Zapisz",
+    "CUSTOMER_NAME": "Nazwa klienta",
+    "QUANTITY": "Ilość",
+    "REQUIRED": "To pole jest wymagane",
+    "MAX_LENGTH": "Maksymalnie 100 znaków"
+  },
+  "DASHBOARD": {
+    "TITLE": "Pulpit"
+  }
+}

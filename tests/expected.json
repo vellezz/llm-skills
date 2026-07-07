@@ -1,0 +1,17 @@
+{
+  "endpoints": [
+    { "method": "GET", "route": "/api/health", "optional": true },
+    { "method": "GET", "route": "/api/orders" },
+    { "method": "GET", "route": "/api/orders/{id}" },
+    { "method": "POST", "route": "/api/orders" },
+    { "method": "DELETE", "route": "/api/orders/{id}" }
+  ],
+  "entities": ["Customer", "Order", "OrderItem"],
+  "angular_routes": ["", "orders", "orders/new"],
+  "npm_scripts": ["start", "build", "test", "lint"],
+  "drift": {
+    "stale_hint": "create",
+    "orphaned_hint": "DELETE",
+    "missing_hint": "archive"
+  }
+}

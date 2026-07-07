@@ -1,0 +1,14 @@
+{
+  "ORDERS": {
+    "TITLE": "Orders",
+    "NEW": "New order",
+    "SAVE": "Save",
+    "CUSTOMER_NAME": "Customer name",
+    "QUANTITY": "Quantity",
+    "REQUIRED": "This field is required",
+    "MAX_LENGTH": "Maximum 100 characters"
+  },
+  "DASHBOARD": {
+    "TITLE": "Dashboard"
+  }
+}

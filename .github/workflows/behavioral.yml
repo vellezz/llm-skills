@@ -1,0 +1,47 @@
+name: behavioral
+
+# Costs real API tokens — runs nightly and on demand, never per-push.
+on:
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "Run a single test (api | idempotency | drift)"
+        required: false
+        type: string
+  schedule:
+    - cron: "0 3 * * *"
+
+jobs:
+  behavioral:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - run: npm install -g @anthropic-ai/claude-code
+
+      - name: Run behavioral suite
+        run: |
+          if [ -n "${{ inputs.only }}" ]; then
+            python tests/run.py --only "${{ inputs.only }}"
+          else
+            python tests/run.py
+          fi
+
+      - name: Upload generated docs and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: behavioral-artifacts
+          path: tests/.work
+          retention-days: 14
