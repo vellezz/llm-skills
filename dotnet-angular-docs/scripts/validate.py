@@ -80,7 +80,7 @@ def check_skills() -> None:
 
         body = skill_md.read_text(encoding="utf-8")
         # every templates/references file mentioned must exist (incl. ../ paths)
-        for ref in set(re.findall(r"`((?:\.\./)?[\w./-]*?(?:references|templates)/[\w.-]+\.md)`", body)):
+        for ref in set(re.findall(r"`((?:\.\./[\w-]+/)?(?:references|templates)/[\w.-]+\.md)`", body)):
             if not (d / ref).resolve().is_file():
                 err(f"{skill_md}: broken reference {ref}")
         # no orphaned templates/references
