@@ -46,7 +46,9 @@ ask one short question.
 - The nav mirrors `docs/` — never invent entries; regenerate only inside the
   docgen markers and preserve manual edits outside them.
 - `drift-report.md` stays OUT of the nav by default — it is a QA artifact,
-  not reader content. Include it only on explicit request.
+  not reader content. Include it only on explicit request or when
+  `docs/.docgen/config.yml` sets `docs-site.include-drift-report: true`;
+  `docs-site.site-name` overrides the derived site name.
 - `docs/index.md` is the homepage; if missing, create a minimal one linking
   the top-level sections (grounded in existing files only).
 - Deliverables: `mkdocs.yml` (+ workflow file in `workflow` mode). Final chat

@@ -35,6 +35,13 @@ description: >-
    hand-written prose; refresh only factual sections (setup, commands,
    structure) and say what you changed.
 
+## Repo configuration (`docs/.docgen/`)
+
+Optional `config.yml` keys under `project-readme`: `sections` (whitelist),
+`omit` (blacklist), `max-lines`. `docs/.docgen/templates/readme.md` replaces
+the plugin template. Config never overrides fact extraction or the
+copy-pasteable-commands rule; ignore unknown keys, never fail on config.
+
 ## Multi-repo workspaces
 
 When the target directory is a workspace parent holding several repositories,

@@ -35,6 +35,12 @@ Audience: end users. No code, no class names, no HTTP verbs in the output.
    `<!-- TODO: add screenshot of {screen} -->` placeholders rather than
    inventing descriptions.
 
+## Repo configuration (`docs/.docgen/`)
+
+Optional `config.yml` keys under `user-manual`: `locales` (which i18n locales
+to generate manuals for). `docs/.docgen/templates/feature-guide.md` replaces
+the plugin template. Ignore unknown keys; never fail on config.
+
 ## Rules
 
 - Write in second person, imperative: "Click **Save**", "Enter the order number".

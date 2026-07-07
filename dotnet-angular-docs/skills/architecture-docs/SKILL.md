@@ -38,6 +38,14 @@ If ambiguous, ask one short question instead of guessing.
    claim must trace to something you found in code or config; mark
    assumptions explicitly.
 
+## Repo configuration (`docs/.docgen/`)
+
+Optional `config.yml` keys under `architecture-docs`: `c4-levels` (subset of
+context/container/component), `max-nodes`. Repo templates in
+`docs/.docgen/templates/` (adr.md, c4-overview.md) replace the plugin's.
+Config adjusts scope only — grounding and Mermaid conventions stand; ignore
+unknown keys.
+
 ## Multi-repo workspaces
 
 - Best run from a workspace parent containing all the system's repositories

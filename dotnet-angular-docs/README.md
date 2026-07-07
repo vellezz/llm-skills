@@ -24,6 +24,7 @@ a repository so GitHub Copilot (VS Code + coding agent) picks them up.
 | `skills/db-schema-docs` | EF Core data model docs: entities, relations, Mermaid ER diagram, migration history | "data model", "ER diagram", "schemat bazy", "encje" |
 | `skills/docs-suite` | **Multi-agent orchestrator**: full documentation set via parallel docs-writer subagents (one per service/area) + index synthesis | "document everything", "pełna dokumentacja", `/docs-all` |
 | `skills/docs-site` | GitHub Pages publishing (MkDocs Material + Mermaid): `local` build-and-push, or a manually-triggered per-release-tag workflow | "github pages", "opublikuj dokumentację", `/docs-pages` |
+| `skills/custom-docs` | Project-specific documents from free-text specs in `docs/.docgen/custom/` (env references, bespoke diagrams, runbooks) | "custom docs", "dedykowany dokument", `/docs-custom` |
 | `commands/docs-*` | Slash commands (Claude Code only) — deterministic invocation of each skill | `/docs-api`, `/docs-drift`, `/docs-schema`, … |
 | `agents/docs-writer.md` | Claude Code subagent enforcing grounding, idempotent updates, Markdown+Mermaid output | invoked via the Agent tool |
 | `copilot/agents/docs-writer.agent.md` | Same agent, adapted for GitHub Copilot (Copilot tool names) | selected manually in chat |
@@ -154,6 +155,49 @@ never hardcode them.
 them — no narration, no pasting docs into chat, terse subagent returns
 (file list + status). This never shortens the documentation itself.
 
+## Per-repo customization (`docs/.docgen/`)
+
+Three layers, all optional, all living in the documented repository — the
+plugin itself stays untouched:
+
+1. **`config.yml`** — declarative switches for the built-in documents.
+   Each skill reads only its own keys; unknown keys are ignored, a missing
+   file means defaults. Example:
+
+   ```yaml
+   lang: pl
+   api-docs:
+     exclude-routes: ["/debug/*", "/internal/*"]
+     consumed-by: false
+   project-readme:
+     omit: [deployment]
+     max-lines: 200
+   architecture-docs:
+     c4-levels: [context, container]
+     max-nodes: 12
+   user-manual:
+     locales: [pl]
+   db-schema-docs:
+     split-threshold: 15
+   docs-site:
+     include-drift-report: false
+   ```
+
+2. **`templates/`** — repo-local template overrides (`api-docs.md`,
+   `readme.md`, `adr.md`, …) replace the plugin's templates: full control of
+   document structure, company sections included.
+
+3. **`custom/*.md`** — free-text specs for entirely new documents
+   (frontmatter names the output path; the brief says what to document —
+   e.g. container env variables, a checkout-flow sequence diagram). Rendered
+   by the `custom-docs` skill; `docs-suite` fans them out one agent per spec;
+   `docs-drift` re-audits them against the sources their spec names.
+
+Hard boundary: configuration adjusts scope and shape, never truth — grounding
+rules, secret-value redaction, and parsed-format contracts (endpoint headers,
+drift labels) cannot be disabled. Excluded routes are noted in `index.md`
+and are exempt from drift's MISSING checks.
+
 ## Customization
 
 - **Output language:** pass it in the arguments — `lang:pl`, "po polsku",
@@ -164,9 +208,9 @@ them — no narration, no pasting docs into chat, terse subagent returns
   identifiers, routes, shell commands, and parsed labels (endpoint headers,
   drift Summary/verdict, Keep a Changelog categories) are never translated.
   `user-manual` additionally binds the text language to the i18n locale it
-  quotes labels from.
-- Change output paths in each SKILL.md ("Rules" section).
-- Edit templates freely — structure is contract, wording is yours.
+  quotes labels from. (Also settable per repo: `lang` in
+  `docs/.docgen/config.yml`.)
 - Add company standards via a repo-level instructions file (Claude Code:
   `CLAUDE.md`; Copilot: `.github/copilot-instructions.md`); skills compose with
-  instructions, they don't replace them.
+  instructions, they don't replace them. For structural changes prefer
+  `docs/.docgen/` (section above).

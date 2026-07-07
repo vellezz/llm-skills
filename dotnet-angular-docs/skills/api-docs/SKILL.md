@@ -37,6 +37,17 @@ Produce endpoint-level API documentation grounded in actual source code.
 5. **Render using `templates/api-docs.md`.** One file per controller/feature
    group; an `index.md` with a table of all groups.
 
+## Repo configuration (`docs/.docgen/`)
+
+- `config.yml` keys under `api-docs`: `exclude-routes` (glob list — skip and
+  note them in `index.md` as "Omitted routes"), `consumed-by` (bool),
+  `examples` (bool), `output` (path). Top-level `lang` applies too.
+- `docs/.docgen/templates/api-docs.md`, if present, replaces the plugin
+  template.
+- Config is always optional and adjusts scope/shape only — it can never
+  disable grounding or the endpoint-header/marker contracts. Never fail on a
+  missing or partially unknown config; ignore unknown keys.
+
 ## Multi-repo workspaces
 
 - The Angular client may live in a sibling repository. Accept a `repos:`

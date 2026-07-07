@@ -58,6 +58,10 @@ The audit never edits the documentation it examines.
 
 - Every finding needs evidence on both sides: doc file + location, and
   code file + symbol/line.
+- **Repo configuration:** read `docs/.docgen/config.yml` if present — routes
+  in `api-docs.exclude-routes` are intentionally undocumented: never flag
+  them as MISSING. Custom documents carry a `> Spec:` header — re-audit them
+  against the sources their spec names.
 - **Multi-repo:** cross-repo contract checks ("Consumed by" lines, Angular
   client drift) require the counterpart repository in the workspace (or via
   `repos:…`). When it is absent, record those checks as UNVERIFIED with the

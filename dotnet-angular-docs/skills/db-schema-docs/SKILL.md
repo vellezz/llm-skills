@@ -31,6 +31,13 @@ description: >-
    the general rules in `../architecture-docs/references/mermaid-conventions.md`
    (quoting, no custom colors, size limits).
 
+## Repo configuration (`docs/.docgen/`)
+
+Optional `config.yml` keys under `db-schema-docs`: `split-threshold`
+(entities per file before splitting by context), `output`.
+`docs/.docgen/templates/data-model.md` replaces the plugin template. Ignore
+unknown keys; never fail on config.
+
 ## Rules
 
 - Never invent columns or relations — verify each in configuration or
