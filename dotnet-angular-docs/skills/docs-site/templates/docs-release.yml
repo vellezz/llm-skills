@@ -1,0 +1,44 @@
+# Publishes the documentation site for a specific release tag.
+# Manual trigger only — publishing a release's docs is a deliberate act.
+name: docs-release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to publish docs for (e.g. v1.3.0)"
+        required: true
+        type: string
+
+permissions:
+  contents: write # mike pushes the gh-pages branch
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # mike needs gh-pages history; tags need full fetch
+
+      - name: Take docs content as of the release tag
+        run: git checkout "${{ inputs.tag }}" -- docs/
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install mkdocs-material mike
+
+      - name: Verify the site builds (broken links fail here)
+        run: mkdocs build --strict
+
+      - name: Publish version derived from the tag (vX.Y.Z -> X.Y) + latest
+        run: |
+          TAG="${{ inputs.tag }}"
+          VERSION="${TAG#v}"
+          DOCS_VERSION="${VERSION%.*}"
+          git config user.name "docs-release"
+          git config user.email "docs-release@users.noreply.github.com"
+          mike deploy --push --update-aliases "$DOCS_VERSION" latest
+          mike set-default --push latest

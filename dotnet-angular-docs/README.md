@@ -23,6 +23,7 @@ a repository so GitHub Copilot (VS Code + coding agent) picks them up.
 | `skills/docs-drift` | Audit existing docs against code: stale endpoints, broken README commands, outdated diagrams | "docs drift", "stale docs", "audyt dokumentacji" |
 | `skills/db-schema-docs` | EF Core data model docs: entities, relations, Mermaid ER diagram, migration history | "data model", "ER diagram", "schemat bazy", "encje" |
 | `skills/docs-suite` | **Multi-agent orchestrator**: full documentation set via parallel docs-writer subagents (one per service/area) + index synthesis | "document everything", "pełna dokumentacja", `/docs-all` |
+| `skills/docs-site` | GitHub Pages publishing (MkDocs Material + Mermaid): `local` build-and-push, or a manually-triggered per-release-tag workflow | "github pages", "opublikuj dokumentację", `/docs-pages` |
 | `commands/docs-*` | Slash commands (Claude Code only) — deterministic invocation of each skill | `/docs-api`, `/docs-drift`, `/docs-schema`, … |
 | `agents/docs-writer.md` | Claude Code subagent enforcing grounding, idempotent updates, Markdown+Mermaid output | invoked via the Agent tool |
 | `copilot/agents/docs-writer.agent.md` | Same agent, adapted for GitHub Copilot (Copilot tool names) | selected manually in chat |
