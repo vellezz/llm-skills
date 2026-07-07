@@ -13,7 +13,8 @@ from pathlib import Path
 
 import yaml
 
-PLUGIN = Path(__file__).resolve().parent.parent / "dotnet-angular-docs"
+# scripts/ lives inside the plugin directory - the plugin root is one level up
+PLUGIN = Path(__file__).resolve().parent.parent
 ERRORS: list[str] = []
 
 

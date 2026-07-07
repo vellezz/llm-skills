@@ -29,9 +29,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import asserts  # noqa: E402
 import extract  # noqa: E402
 
-ROOT = Path(__file__).resolve().parent            # tests/
-PROJECT = ROOT.parent                             # docs_plugin/
-PLUGIN = PROJECT / "dotnet-angular-docs"
+ROOT = Path(__file__).resolve().parent            # <plugin>/tests/
+PLUGIN = ROOT.parent                              # the plugin directory itself
 FIXTURE = ROOT / "fixture"
 WORK = ROOT / ".work"
 

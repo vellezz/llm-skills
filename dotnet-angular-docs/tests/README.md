@@ -4,10 +4,10 @@
 
 | Warstwa | Komenda | Koszt | Kiedy |
 |---|---|---|---|
-| Statyczna | `python scripts/validate.py` | darmowa | każdy commit (CI: `validate.yml`) |
+| Statyczna | `python dotnet-angular-docs/scripts/validate.py` | darmowa | każdy commit (CI: `validate.yml`) |
 | Oficjalny walidator | `claude plugin validate ./dotnet-angular-docs` | darmowa | każdy commit (CI) |
-| Selftest parserów + ekstraktora | `python tests/run.py --selftest` | darmowa | każdy commit (CI) |
-| Behawioralna | `python tests/run.py --target <app>` | tokeny API | on-demand / nightly |
+| Selftest parserów + ekstraktora | `python dotnet-angular-docs/tests/run.py --selftest` | darmowa | każdy commit (CI) |
+| Behawioralna | `python dotnet-angular-docs/tests/run.py --target <app>` | tokeny API | on-demand / nightly |
 
 ## Testy behawioralne — na Twoich źródłach
 
@@ -15,12 +15,12 @@ Cel podajesz przy uruchomieniu — harness testuje plugin na **prawdziwej
 aplikacji**, nie na syntetycznym przykładzie:
 
 ```bash
-python tests/run.py --target C:/Projekty/moja-appka
-python tests/run.py --target ../appka --only drift
-python tests/run.py --target ../appka --scope "src/OrdersService"   # duże repo
-python tests/run.py --target ../appka --timeout 2700                # domyślnie 1800 s
-python tests/run.py --target ../backend --target ../frontend        # multi-repo
-python tests/run.py --target ../appka --model sonnet                # inny model
+python dotnet-angular-docs/tests/run.py --target C:/Projekty/moja-appka
+python dotnet-angular-docs/tests/run.py --target ../appka --only drift
+python dotnet-angular-docs/tests/run.py --target ../appka --scope "src/OrdersService"   # duże repo
+python dotnet-angular-docs/tests/run.py --target ../appka --timeout 2700                # domyślnie 1800 s
+python dotnet-angular-docs/tests/run.py --target ../backend --target ../frontend        # multi-repo
+python dotnet-angular-docs/tests/run.py --target ../appka --model sonnet                # inny model
 ```
 
 Multi-repo: każde `--target` to osobne repo — kopie lądują obok siebie w
@@ -28,7 +28,7 @@ jednym workdirze (wzorzec workspace-parent), każda z własną historią git;
 ekstraktor liczy ground truth z unii wszystkich drzew, a asercje szukają
 `docs/api` zarówno w rootcie, jak i per-repo.
 
-Zasady bezpieczeństwa: źródła są **kopiowane** do `tests/.work/` (bez
+Zasady bezpieczeństwa: źródła są **kopiowane** do `dotnet-angular-docs/tests/.work/` (bez
 `node_modules`, `bin`, `obj`, `.git`…) i dostają świeżą historię git —
 oryginalne repo nie jest dotykane.
 
@@ -61,7 +61,7 @@ fabrykacji** — 4 WARN-y completeness to endpointy upload/stats warte ręcznego
 sprawdzenia.
 
 Sam ekstraktor jest testowany za darmo: `--selftest` porównuje jego wynik na
-`tests/fixture/` z ręcznie spisanym `tests/expected.json`.
+`dotnet-angular-docs/tests/fixture/` z ręcznie spisanym `dotnet-angular-docs/tests/expected.json`.
 
 ### Testy
 
@@ -89,7 +89,7 @@ transkrypcję (wszystkie tury asystenta), nie tylko finalną wiadomość — ina
 raport zapisany w turach pośrednich, zakończony zwięzłym podsumowaniem, byłby
 utracony.
 
-Artefakty każdego biegu (doki, logi `claude`) zostają w `tests/.work/` —
+Artefakty każdego biegu (doki, logi `claude`) zostają w `dotnet-angular-docs/tests/.work/` —
 przy failu zacznij od `*.log`.
 
 ## Interpretacja wyników
@@ -143,7 +143,7 @@ kontraktem. Kluczowe zmiany, które to dały:
 
 ## Fixture
 
-`tests/fixture/` (mini .NET 8 + Angular 17 + EF Core) służy do darmowej
+`dotnet-angular-docs/tests/fixture/` (mini .NET 8 + Angular 17 + EF Core) służy do darmowej
 cross-walidacji ekstraktora i jako smoke bez `--target`; do oceny jakości
 skilli używaj prawdziwych aplikacji przez `--target`.
 

@@ -1,4 +1,4 @@
-name: behavioral
+name: dotnet-angular-docs / behavioral
 
 # Costs real API tokens — runs nightly and on demand, never per-push.
 on:
@@ -33,9 +33,9 @@ jobs:
       - name: Run behavioral suite
         run: |
           if [ -n "${{ inputs.only }}" ]; then
-            python tests/run.py --only "${{ inputs.only }}"
+            python dotnet-angular-docs/tests/run.py --only "${{ inputs.only }}"
           else
-            python tests/run.py
+            python dotnet-angular-docs/tests/run.py
           fi
 
       - name: Upload generated docs and logs
@@ -43,5 +43,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: behavioral-artifacts
-          path: tests/.work
+          path: dotnet-angular-docs/tests/.work
           retention-days: 14
