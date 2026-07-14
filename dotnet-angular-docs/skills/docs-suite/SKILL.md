@@ -42,6 +42,12 @@ what makes the output reliable on large solutions.
    - the resolved output language (docs-writer rule 9),
    - the return format: "Reply only with the list of files you wrote and a
      one-line status per file — no document content, no narration."
+
+> **No parallel-subagent tool?** On platforms without a tool for spawning
+> parallel subagents (GitHub Copilot, VS Code agent mode), run the work items
+> sequentially — one skill, one scope at a time. Every per-item output
+> contract stays identical; only the wall-clock changes.
+
 4. **Synthesize.** When all items are done:
    - build `docs/index.md` linking every generated file, grouped by area,
    - spot-check each file against its contract (endpoint header format,
