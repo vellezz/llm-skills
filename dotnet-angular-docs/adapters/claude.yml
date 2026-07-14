@@ -1,0 +1,17 @@
+platform: claude
+persona:
+  path: agents/docs-writer.md
+  frontmatter:
+    tools: Skill, Read, Write, Edit, Bash, Glob, Grep
+    model: inherit
+  skill_invocation: loading it with the Skill tool
+  command_skill_ref: "invoke the Skill tool with skill `{skill}`"
+commands:
+  dir: commands
+  ext: .md
+  arg_token: $ARGUMENTS
+  frontmatter: {}
+skills:
+  copy_to: skills
+instructions:
+  path: null
