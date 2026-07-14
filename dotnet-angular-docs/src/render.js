@@ -47,3 +47,43 @@ export function renderCommands(core, adapter) {
     return { path: `${adapter.commands.dir}/${c.name}${adapter.commands.ext}`, content: stringify({ data, body }) };
   });
 }
+
+function walk(dir) {
+  const out = [];
+  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, e.name);
+    if (e.isDirectory()) out.push(...walk(full));
+    else out.push(full);
+  }
+  return out;
+}
+
+export function renderSkills(root, adapter) {
+  const skillsRoot = path.join(root, 'skills');
+  return walk(skillsRoot).map((full) => {
+    const rel = path.relative(skillsRoot, full).split(path.sep).join('/');
+    return { path: `${adapter.skills.copy_to}/${rel}`, content: fs.readFileSync(full, 'utf8') };
+  });
+}
+
+export function checkInvariants(core, names) {
+  const skills = new Set(names);
+  for (const c of core.commands) {
+    if (skills.has(c.name)) throw new Error(`command "${c.name}" would shadow the same-named skill`);
+    if (!skills.has(c.skill)) throw new Error(`command "${c.name}" targets missing skill "${c.skill}"`);
+  }
+}
+
+export function renderInstructions(core, adapter) {
+  if (!adapter.instructions || !adapter.instructions.path) return null;
+  const content = `<!-- docgen:begin:instructions -->\n${core.instructions.trim()}\n<!-- docgen:end:instructions -->\n`;
+  return { path: adapter.instructions.path, content };
+}
+
+export function render(root, core, adapter) {
+  checkInvariants(core, skillNames(root));
+  const files = [renderPersona(core, adapter), ...renderCommands(core, adapter), ...renderSkills(root, adapter)];
+  const instr = renderInstructions(core, adapter);
+  if (instr) files.push(instr);
+  return files;
+}
