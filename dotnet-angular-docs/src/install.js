@@ -13,10 +13,12 @@ export function planFor(root, platform, targetRoot) {
   return files.map((f) => ({ abs: path.join(targetRoot, f.path), content: f.content }));
 }
 
-function writeFile(abs, content, force) {
+export function writeFile(abs, content, force) {
   fs.mkdirSync(path.dirname(abs), { recursive: true });
   const isInstructions = abs.endsWith('copilot-instructions.md');
-  if (fs.existsSync(abs) && !force && !isInstructions) return 'skip';
+  if (fs.existsSync(abs) && !force && !isInstructions) {
+    return fs.readFileSync(abs, 'utf8') === content ? 'skip' : 'differs';
+  }
   if (isInstructions && fs.existsSync(abs)) {
     const existing = fs.readFileSync(abs, 'utf8');
     const re = /<!-- docgen:begin:instructions -->[\s\S]*?<!-- docgen:end:instructions -->\n?/;
@@ -45,11 +47,22 @@ function main() {
     for (const f of planFor(PKG_ROOT, platform, targetRoot)) {
       if (values['dry-run']) { console.log(`[dry-run] ${path.relative(targetRoot, f.abs)}`); continue; }
       const action = writeFile(f.abs, f.content, values.force);
-      console.log(`${action}: ${path.relative(targetRoot, f.abs)}`);
+      const rel = path.relative(targetRoot, f.abs);
+      if (action === 'differs') console.warn(`differs (kept; re-run that single platform with --force to overwrite): ${rel}`);
+      else console.log(`${action}: ${rel}`);
     }
   }
 }
 
-if (import.meta.url === `file://${process.argv[1]}` || process.argv[1] === fileURLToPath(import.meta.url)) {
+function isMainModule() {
+  if (!process.argv[1]) return false;
+  try {
+    return fs.realpathSync(process.argv[1]) === fileURLToPath(import.meta.url);
+  } catch {
+    return false;
+  }
+}
+
+if (isMainModule()) {
   main();
 }

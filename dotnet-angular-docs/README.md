@@ -21,6 +21,10 @@ repository.
 
 Add `--dry-run` to preview writes, `--force` to overwrite existing files.
 
+> Copilot and VS Code share `.github/prompts/` and `.github/copilot-instructions.md`
+> (differing only in the persona file and prompt `mode`), so with `--platform all`
+> the first-written prompts win; re-run a single platform with `--force` to switch.
+
 ## Single source of truth
 
 Persona, commands, and grounding rules live once in `core/`; per-platform
@@ -135,9 +139,11 @@ the skills automatically. Verify in VS Code Copilot Chat with `/skills`.
   your team's actual prompts.
 - **Idempotency markers** (`<!-- docgen:begin -->`) let skills refresh generated
   sections without clobbering hand-written docs.
-- **One agent, two frontmatters** — the body is identical; only the `tools`
-  declaration and file extension differ, because Claude Code and Copilot name
-  their tools differently.
+- **One persona, three renderings** — the body lives once in `core/persona.md`;
+  `src/render.js` emits Claude's `agents/docs-writer.md`, Copilot's
+  `.github/agents/docs-writer.agent.md`, and VS Code's
+  `.github/chatmodes/docs-writer.chatmode.md`, differing only in the frontmatter
+  (`tools` names, file extension) supplied by `adapters/*.yml`.
 
 ## Multi-repo systems
 
