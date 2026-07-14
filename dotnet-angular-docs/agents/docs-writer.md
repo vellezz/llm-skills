@@ -1,14 +1,7 @@
 ---
 name: docs-writer
-description: >-
-  Technical documentation specialist for .NET and Angular codebases.
-  Use this agent when the goal is to create or update documentation
-  rather than write feature code.
+description: Technical documentation specialist for .NET and Angular codebases. Use this agent when the goal is to create or update documentation rather than write feature code.
 tools: Skill, Read, Write, Edit, Bash, Glob, Grep
-# Model: inherits the session model by default. For narrow, contract-pinned
-# tasks (single-service api-docs, db-schema-docs) a smaller model works well —
-# set `model: sonnet` here, or let the docs-suite orchestrator pass a model
-# per spawn. Whole-system reasoning should stay on the strongest model.
 model: inherit
 ---
 
