@@ -8,8 +8,30 @@ against the code (drift detection). All output is grounded in actual
 source-code analysis; the skills forbid inventing endpoints, commands, or
 behavior.
 
-It is **portable**: install it as a Claude Code plugin, or drop the skills into
-a repository so GitHub Copilot (VS Code + coding agent) picks them up.
+It is **portable**: install it as a Claude Code plugin, or run the `npx`
+installer to generate the GitHub Copilot or VS Code agent-mode files for a
+repository.
+
+## Install into your repo
+
+- **Claude Code:** install this plugin as usual (marketplace or plugin directory).
+- **GitHub Copilot:** `npx dotnet-angular-docs-init --platform copilot` in your repo.
+- **VS Code agent mode:** `npx dotnet-angular-docs-init --platform vscode` in your repo.
+- **All at once:** `npx dotnet-angular-docs-init --platform all`.
+
+Add `--dry-run` to preview writes, `--force` to overwrite existing files.
+
+> Copilot and VS Code share `.github/prompts/` and `.github/copilot-instructions.md`
+> (differing only in the persona file and prompt `mode`), so with `--platform all`
+> the first-written prompts win; re-run a single platform with `--force` to switch.
+
+## Single source of truth
+
+Persona, commands, and grounding rules live once in `core/`; per-platform
+naming lives in `adapters/*.yml`. `src/render.js` turns them into each
+platform's files; `skills/` is copied verbatim. The Claude plugin's own
+`agents/` and `commands/` are generated from `core/` (run `npm run build`)
+and kept in sync by `tests/sync.test.js`.
 
 ## What's inside
 
@@ -28,20 +50,24 @@ a repository so GitHub Copilot (VS Code + coding agent) picks them up.
 | `skills/custom-docs` | Project-specific documents from free-text specs in `docs/.docgen/custom/` (env references, bespoke diagrams, runbooks) | "custom docs", "dedykowany dokument", `/docs-custom` |
 | `commands/docs-*` | Slash commands (Claude Code only) — deterministic invocation of each skill | `/docs-api`, `/docs-all`, `/docs-pages`, … |
 | `agents/docs-writer.md` | Claude Code subagent enforcing grounding, idempotent updates, Markdown+Mermaid output | invoked via the Agent tool |
-| `copilot/agents/docs-writer.agent.md` | Same agent, adapted for GitHub Copilot (Copilot tool names) | selected manually in chat |
 
 ## Layout
 
 ```
 dotnet-angular-docs/
 ├── .claude-plugin/plugin.json         # Claude Code manifest
-├── agents/docs-writer.md              # agent — Claude Code tool names
-├── commands/                          # slash commands — Claude Code only
+├── core/                              # single source: persona, commands, grounding rules
+│   └── persona.md instructions.md commands.yml
+├── adapters/                          # per-platform naming/tool-name manifests
+│   └── claude.yml copilot.yml vscode.yml
+├── src/                               # render.js (build) + install.js (npx CLI)
+├── agents/docs-writer.md              # generated — Claude Code tool names
+├── commands/                          # generated — slash commands, Claude Code only
 │   ├── docs-api.md docs-arch.md docs-readme.md docs-manual.md
 │   ├── docs-changelog.md docs-schema.md docs-custom.md
 │   ├── docs-all.md                    # multi-agent suite
 │   └── docs-pages.md                  # GitHub Pages publishing
-├── skills/                            # shared skills (used by both platforms)
+├── skills/                            # shared skills, copied verbatim to every platform
 │   ├── api-docs/ architecture-docs/ project-readme/
 │   ├── user-manual/ changelog/ db-schema-docs/
 │   ├── docs-drift/                    # drift audit (no wrapper command — name-collision rule)
@@ -49,14 +75,15 @@ dotnet-angular-docs/
 │   ├── docs-site/                     # GitHub Pages publishing
 │   ├── custom-docs/                   # free-text custom document specs
 │   └── ops-docs/                      # deployment & operations reference
-├── copilot/agents/docs-writer.agent.md   # agent — Copilot tool names
-├── tests/                             # behavioral test harness (not loaded by the plugin)
+├── tests/                             # behavioral test harness + tests/sync.test.js (sync guard)
 ├── scripts/validate.py                # static validation (CI)
 └── README.md
 ```
 
-The `skills/` folder is shared and platform-neutral. Only the **agent** differs
-between platforms (tool names and file extension), so it is kept in two places.
+The `skills/` folder is shared and platform-neutral. `agents/` and `commands/`
+are generated for Claude Code from `core/` (`npm run build`); other platforms
+get their own generated files via the `npx` installer (see "Install into your
+repo" above).
 
 ## Installation
 
@@ -88,20 +115,12 @@ Slash commands map 1:1 to skills for deterministic invocation:
 > register as `/plugin:name` and the command shadows the skill, so the skill's
 > procedure never loads. That is why `docs-drift` has no wrapper command.
 
-### GitHub Copilot — repo-level (VS Code + coding agent)
+### GitHub Copilot / VS Code agent mode — repo-level
 
-Copy the shared skills and the **Copilot** agent variant into the repository:
-
-```bash
-cp -r dotnet-angular-docs/skills/*            <your-repo>/.github/skills/
-cp    dotnet-angular-docs/copilot/agents/docs-writer.agent.md \
-                                              <your-repo>/.github/agents/
-```
-
-Use the **`copilot/agents/`** variant (not `agents/docs-writer.md`) — it uses
-Copilot's tool names (`search/codebase`, `githubRepo`, `edit`, `view`, `bash`).
-Commit — everyone on the team gets the skills automatically. Verify in VS Code
-Copilot Chat with `/skills`.
+Run the `npx` installer (see "Install into your repo" above) to write the
+shared skills and the platform's agent variant — with that platform's tool
+names — into the repository. Commit the result — everyone on the team gets
+the skills automatically. Verify in VS Code Copilot Chat with `/skills`.
 
 > The `commands/` folder is Claude Code-specific — skip it for Copilot; the
 > skills' trigger words cover the same functionality there.
@@ -120,9 +139,11 @@ Copilot Chat with `/skills`.
   your team's actual prompts.
 - **Idempotency markers** (`<!-- docgen:begin -->`) let skills refresh generated
   sections without clobbering hand-written docs.
-- **One agent, two frontmatters** — the body is identical; only the `tools`
-  declaration and file extension differ, because Claude Code and Copilot name
-  their tools differently.
+- **One persona, three renderings** — the body lives once in `core/persona.md`;
+  `src/render.js` emits Claude's `agents/docs-writer.md`, Copilot's
+  `.github/agents/docs-writer.agent.md`, and VS Code's
+  `.github/chatmodes/docs-writer.chatmode.md`, differing only in the frontmatter
+  (`tools` names, file extension) supplied by `adapters/*.yml`.
 
 ## Multi-repo systems
 

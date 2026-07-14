@@ -1,0 +1,17 @@
+platform: copilot
+persona:
+  path: .github/agents/docs-writer.agent.md
+  frontmatter:
+    tools: ["search/codebase", "githubRepo", "edit", "view", "bash"]
+  skill_invocation: opening and following the corresponding skill file
+  command_skill_ref: "follow the procedure in the `{skill}` skill file"
+commands:
+  dir: .github/prompts
+  ext: .prompt.md
+  arg_token: ${input}
+  frontmatter:
+    mode: agent
+skills:
+  copy_to: .github/skills
+instructions:
+  path: .github/copilot-instructions.md

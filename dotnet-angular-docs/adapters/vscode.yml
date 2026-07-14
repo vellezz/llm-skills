@@ -1,0 +1,17 @@
+platform: vscode
+persona:
+  path: .github/chatmodes/docs-writer.chatmode.md
+  frontmatter:
+    tools: [codebase, search, editFiles, runCommands, fetch]
+  skill_invocation: opening and following the corresponding skill file
+  command_skill_ref: "follow the procedure in the `{skill}` skill file"
+commands:
+  dir: .github/prompts
+  ext: .prompt.md
+  arg_token: ${input}
+  frontmatter:
+    mode: docs-writer
+skills:
+  copy_to: .github/instructions
+instructions:
+  path: .github/copilot-instructions.md

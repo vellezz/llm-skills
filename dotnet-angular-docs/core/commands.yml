@@ -1,0 +1,105 @@
+# Single source of truth for the 10 docs-* commands.
+# Rendered into per-platform command/prompt files by later tasks.
+# Each entry's `description` and `argument-hint` are copied verbatim from the
+# frontmatter of the matching commands/docs-*.md file; `contract-summary` is a
+# faithful condensation of that file's "Key contract" paragraph.
+
+- name: docs-api
+  skill: api-docs
+  description: Generate REST API documentation from ASP.NET controllers / minimal APIs
+  argument-hint: "[feature, controller, or path — default: whole API surface]"
+  contract-summary: >-
+    Write files to docs/api/ (one per feature group + index.md); every endpoint
+    section header is exactly `### METHOD /route`; wrap generated sections in
+    <!-- docgen:begin:endpoints --> / <!-- docgen:end:endpoints --> markers.
+    Never invent endpoints — verify each in code.
+
+- name: docs-arch
+  skill: architecture-docs
+  description: Generate architecture docs — ADR, C4 overview, or Mermaid diagrams
+  argument-hint: "[adr <decision> | c4 | deps | sequence <flow> — default: ask]"
+  contract-summary: >-
+    Deliverables are files under docs/architecture/ or docs/adr/NNNN-title.md.
+    Final chat message is 1–3 sentences, with no document pasted into chat.
+
+- name: docs-readme
+  skill: project-readme
+  description: Generate or refresh the README / onboarding guide with verified commands
+  argument-hint: "[optional: path to the README to refresh — default: ./README.md]"
+  contract-summary: >-
+    The deliverable is the README.md file; when refreshing, preserve
+    hand-written prose and badges. Final chat message is 1–3 sentences on what
+    changed, with no README pasted into chat.
+
+- name: docs-manual
+  skill: user-manual
+  description: Generate an end-user manual from Angular routes, forms, and i18n labels
+  argument-hint: "[feature or route — default: all top-level routes]"
+  contract-summary: >-
+    Audience is end users: no code, class names, or HTTP verbs in the output;
+    use exact UI labels from i18n files. Deliverables are files under
+    docs/user-guide/; final chat message is 1–3 sentences listing the files.
+
+- name: docs-changelog
+  skill: changelog
+  description: Generate changelog / release notes from git history with breaking-change detection
+  argument-hint: "[range or version, e.g. v1.2.0..HEAD — default: last tag → HEAD]"
+  contract-summary: >-
+    Classify entries into Keep a Changelog categories with breaking changes on
+    top, and insert the new section idempotently into CHANGELOG.md without
+    rewriting prior entries. Final chat message is 1–3 sentences (version,
+    counts).
+
+- name: docs-schema
+  skill: db-schema-docs
+  description: Document the EF Core data model — entities, relations, ER diagram, migrations
+  argument-hint: "[DbContext name or bounded context — default: all DbContexts]"
+  contract-summary: >-
+    Precedence is Fluent API > annotations > conventions, with convention-only
+    facts marked ⚠ Convention. Deliverable is docs/architecture/data-model.md
+    with a Mermaid erDiagram; final chat message is 1–3 sentences (entity
+    count, files written).
+
+- name: docs-custom
+  skill: custom-docs
+  description: Generate project-specific documents from specs in docs/.docgen/custom/
+  argument-hint: "[spec name(s) — default: all specs in docs/.docgen/custom/]"
+  contract-summary: >-
+    Each spec's frontmatter names the output file; the brief controls content
+    but never overrides grounding — every fact must trace to code/config and
+    secret values are never documented. Deliverables are files; final chat
+    message is 1–3 sentences.
+
+- name: docs-all
+  skill: docs-suite
+  description: Generate the complete documentation set via parallel docs-writer subagents
+  argument-hint: "[scope, repos:..., lang:xx — default: whole workspace]"
+  contract-summary: >-
+    Inventory the workspace, then fan out parallel docs-writer subagents (~4
+    at a time), one per service/area, each loading exactly one skill with an
+    exact scope, output paths, and language. The architecture overview and
+    final docs/index.md synthesis stay at the orchestrator level; final chat
+    message is a short report (3–6 sentences).
+
+- name: docs-pages
+  skill: docs-site
+  description: Publish generated docs as a GitHub Pages site (MkDocs Material + Mermaid)
+  argument-hint: "[local | workflow] [vX.Y.Z] [lang:xx] — default: ask which mode"
+  contract-summary: >-
+    The nav in mkdocs.yml mirrors the real docs/ tree (no invented entries,
+    drift-report excluded). Mode local builds and pushes gh-pages now (mkdocs
+    gh-deploy, or mike when a release tag is given); mode workflow scaffolds
+    .github/workflows/docs-release.yml as a manually-triggered publisher for a
+    specific release tag. Remind about the one-time Pages setting (branch
+    gh-pages).
+
+- name: docs-ops
+  skill: ops-docs
+  description: Generate deployment & operations documentation (config, integrations, health checks, network)
+  argument-hint: "[component or scope, lang:xx — default: whole system]"
+  contract-summary: >-
+    AS IS only — no recommendations or suggestions; no YAML/JSON dumps, with
+    configuration shown via tables and prose; secrets referenced by name never
+    value; exact versions; health checks must state what they actually verify;
+    diagrams are Mermaid (PlantUML only if the repo config demands it).
+    Deliverable is the file; final chat message is 1–3 sentences.

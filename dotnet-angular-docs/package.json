@@ -1,0 +1,12 @@
+{
+  "name": "dotnet-angular-docs-init",
+  "version": "0.1.0",
+  "description": "Install the dotnet-angular-docs documentation tooling into a repo for Claude Code, GitHub Copilot, or VS Code agent mode.",
+  "type": "module",
+  "bin": { "dotnet-angular-docs-init": "src/install.js" },
+  "files": ["src", "core", "adapters", "skills"],
+  "scripts": { "test": "node --test", "build": "node src/build.js" },
+  "engines": { "node": ">=20" },
+  "dependencies": { "js-yaml": "^4.1.0" },
+  "license": "MIT"
+}
