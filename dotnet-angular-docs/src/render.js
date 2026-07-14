@@ -20,3 +20,9 @@ export function skillNames(root) {
     .filter((e) => e.isDirectory())
     .map((e) => e.name);
 }
+
+export function renderPersona(core, adapter) {
+  const body = core.persona.body.replaceAll('{{skill_invocation}}', adapter.persona.skill_invocation);
+  const data = { ...core.persona.data, ...adapter.persona.frontmatter };
+  return { path: adapter.persona.path, content: stringify({ data, body }) };
+}
