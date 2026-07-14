@@ -21,3 +21,9 @@ test('stringify round-trips through splitFrontmatter', () => {
   assert.deepEqual(data.tools, ['a', 'b']);
   assert.equal(body.trim(), 'Body here');
 });
+
+test('splitFrontmatter handles CRLF line endings', () => {
+  const { data, body } = splitFrontmatter('---\r\nname: x\r\n---\r\nHello world');
+  assert.equal(data.name, 'x');
+  assert.equal(body.trim(), 'Hello world');
+});
