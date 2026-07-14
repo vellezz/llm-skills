@@ -26,3 +26,24 @@ export function renderPersona(core, adapter) {
   const data = { ...core.persona.data, ...adapter.persona.frontmatter };
   return { path: adapter.persona.path, content: stringify({ data, body }) };
 }
+
+export function renderCommands(core, adapter) {
+  return core.commands.map((c) => {
+    const ref = adapter.persona.command_skill_ref.replace('{skill}', c.skill);
+    const data = {
+      description: c.description,
+      'argument-hint': c['argument-hint'],
+      ...adapter.commands.frontmatter,
+    };
+    const body = [
+      `REQUIRED FIRST STEP: ${ref} and follow its procedure and output contract`,
+      `exactly. Do not document from this summary alone.`,
+      ``,
+      `Key contract: ${c['contract-summary']}`,
+      ``,
+      `Scope: ${adapter.commands.arg_token} (if empty, use the skill's default`,
+      `scope — ask first when the workspace contains more than ~20 projects).`,
+    ].join('\n');
+    return { path: `${adapter.commands.dir}/${c.name}${adapter.commands.ext}`, content: stringify({ data, body }) };
+  });
+}
